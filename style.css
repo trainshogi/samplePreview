@@ -1,0 +1,21 @@
+body {
+    font-family: sans-serif;
+    margin: 2em;
+  }
+  
+  h1 {
+    margin-bottom: 0.5em;
+  }
+  
+  .box {
+    width: 200px;
+    height: 100px;
+    margin-top: 1em;
+    background-color: skyblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  
