@@ -19,7 +19,7 @@ jobs:
           aws-region: ap-northeast-1  # 利用するリージョン
 
       - name: Deploy Preview
-        uses: barecheck/preview-deployment-action@v2
+        uses: barecheck/preview-deployment-action@main
         with:
           template: ./template.yaml
           stack_name: preview-stack-${{ github.event.pull_request.number }}
