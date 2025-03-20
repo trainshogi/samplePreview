@@ -1,0 +1,28 @@
+name: Preview Deployment
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # GitHub OIDCを通じて、作成したIAMロールをAssumeRole
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::281150801606:role/GitHubOIDCRole
+          aws-region: ap-northeast-1  # 利用するリージョン
+
+      # ここ以降、AWS CLIコマンドやSDK、その他AWSリソースへのアクセスが可能になる
+      - name: Deploy Preview
+        uses: barecheck/preview-deployment-action@v2
+        with:
+          template: ./template.yaml
+          stack_name: preview-stack-${{ github.event.pull_request.number }}
+          region: ${{ env.AWS_REGION || 'ap-northeast-1' }}
+          # 必要なオプションを追加
