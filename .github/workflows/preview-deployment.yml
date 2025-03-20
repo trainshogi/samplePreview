@@ -33,6 +33,8 @@ jobs:
           parameters: |
             SiteBucketName=preview-${{ github.event.pull_request.number }}-${{ github.sha }}
           auto_delete: true  # PRクローズ・マージ時に自動で削除する
+          # Preview deployments will add `preview-{PR-number}` as subdomain to this domain
+          domain: d3sg043su0lwp8.cloudfront.net
 
       # (任意) S3バケットにHTML/JS/CSSを配置したい場合の例
       - name: Upload files
