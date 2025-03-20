@@ -2,7 +2,8 @@ name: Preview Deployment
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main  # mainブランチへのPRを対象
 
 jobs:
   deploy-preview:
@@ -11,18 +12,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # GitHub OIDCを通じて、作成したIAMロールをAssumeRole
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::281150801606:role/GitHubOIDCRole
           aws-region: ap-northeast-1  # 利用するリージョン
 
-      # ここ以降、AWS CLIコマンドやSDK、その他AWSリソースへのアクセスが可能になる
       - name: Deploy Preview
         uses: barecheck/preview-deployment-action@v2
         with:
           template: ./template.yaml
           stack_name: preview-stack-${{ github.event.pull_request.number }}
-          region: ${{ env.AWS_REGION || 'ap-northeast-1' }}
-          # 必要なオプションを追加
+          region: ap-northeast-1
+          # CloudFormationのParametersを渡す（S3バケット名をユニークにするためPR番号やSHAを付ける）
+          parameters: |
+            SiteBucketName=preview-${{ github.event.pull_request.number }}-${{ github.sha }}
+          auto_delete: true  # PRクローズ・マージ時に自動で削除する
+
+      # (任意) S3バケットにHTML/JS/CSSを配置したい場合の例
+      - name: Upload files
+        run: |
+          BUCKET_NAME="preview-${{ github.event.pull_request.number }}-${{ github.sha }}"
+          aws s3 sync ./my-sample-app s3://$BUCKET_NAME/ --delete
